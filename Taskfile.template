@@ -2,11 +2,21 @@
 
 set -euxo pipefail
 
-function help {
+function hello-world {
+    : "Prints Hello world!"
+    : " "Delete me!"
+    echo "Hello world!"
+}
+
+function _help {
+    : "Auto-generate list of tasks, including documentation in the form of these noop statements"
+    : "They can span multiple lines if needed"
     echo "$0 <task> <args>"
     echo "Tasks:"
-    compgen -A function | cat -n
+    compgen -A function | grep -v '^_' | sort | while read -r name; do
+        paste <(printf '%s' "$name") <(type "$name" | sed -nEe 's/^[[:space:]]*: ?"(.*)";/\1/p')
+    done
 }
 
 TIMEFORMAT="Task completed in %3lR"
-time ${@:-help}
+time ${@:-_help}
